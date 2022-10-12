@@ -11,4 +11,4 @@
 * Moyen 
 
 # Commentaires
-* Aucun
+* La phase la plus compliqué a été dans chercher.c avec fgets qui prenait pas la bonne ligne ou n'etait pas pris en compte.

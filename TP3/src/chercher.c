@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(){
     //init tableau random
@@ -11,36 +12,50 @@ int main(){
     }
 
     //affichage du tableau
-    for (int i = 0; i < taille_table; i++){
-        printf("%i ,", table[i]);
-    }
-    printf("\n");
+    // for (int i = 0; i < taille_table; i++){
+    //     printf("%i ,", table[i]);
+    // }
+    // printf("\n");
 
+    //on demande les inputs
     int entier_chercher;
-    printf("Quel entier chercher ? : ");
-    scanf("%d",&entier_chercher);
+    printf("Quel entier et votre phrase a chercher ? : \n");
+    scanf("%d\n",&entier_chercher);
+    char phrase_chercher[31];
+    fgets(phrase_chercher, sizeof phrase_chercher, stdin);
 
     //recherche de la valeur
     for (int i = 0; i < taille_table; i++){
         if (table[i] == entier_chercher) printf("entier présent\n"); //on le print autant de fois qu'il y a l'entier
     }
+    printf("\n");
 
     //init phrases
     char phrases[5][31] = {"je suis a la maison c'est cool", "je n'aime pas les epinards !! ", "le cafe est a meilleur boisson", "la vodka est la pire boisson !","le gin est une bonne boisson !"};
-    char phrase_chercher[31];
-    printf("Quel phrase a chercher ? : ");
-    scanf("%31c",phrase_chercher);
+    //on affiche les phrases
+    // for (int i = 0; i < 5; i++){
+    //     printf("%s", phrases[i]);
+    //     printf("\n");
+    // }
+
+    
+    //fgets(phrase_chercher, sizeof(phrase_chercher), stdin );
+    //on affiche la phrase a chercher
+    printf("votre phrase : %s \n", phrase_chercher);
 
     //recherche de la phrase
-    for (int i = 0; i < 31; i++) printf("%c", phrase_chercher[i]);
-    printf("\n");
     for (int i = 0; i < 5; i++){
-        for (int j = 0; j < 31; j++) printf("%c", phrases[i][j]);
-        printf("\n");
+        int count = 0;
+        if (strlen(phrases[i]) != strlen(phrase_chercher)){
+            printf ("taille differente\n");
+            continue;
+            }
+        for (int j = 0; j < 31; j++){
+            if (phrases[i][j] == phrase_chercher[j]) {
+                count ++;
+            }
+        }
+        if (count == 31) printf("phrase trouvée");
     }
-
-    for (int i = 0; i < 5; i++){
-        printf("test\n");
-        if (phrases[i] == phrase_chercher){printf("phrase trouvé"); continue;}; //on compte le nombre de charactere correspondant
-    }
+    return 0;
 }
