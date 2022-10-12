@@ -1,0 +1,6 @@
+test monde
+on fait le TP4
+test
+ecriture dans un fichier apres cette ligne:
+Hello World 
+Hello World 
