@@ -95,7 +95,6 @@ int recois_envoie_message(int socketfd)
 
   // lecture de données envoyées par un client
   int data_size = read(client_socket_fd, (void *)data, sizeof(data));
-
   if (data_size < 0){
     perror("erreur lecture");
     return (EXIT_FAILURE);
@@ -106,6 +105,7 @@ int recois_envoie_message(int socketfd)
    * Les données envoyées par le client peuvent commencer par le mot "message :" ou un autre mot.
    */
   printf("Message recu: %s", data);
+  
   char code[10];
   sscanf(data, "%s", code);
 
@@ -120,10 +120,14 @@ int recois_envoie_message(int socketfd)
   }
 
   //Si on a in caclule il faut renvoyer le resultat
-  if (strcmp(code, "calcule:") == 0){
+  else if (strcmp(code, "calcule:") == 0){
     recois_numeros_calcul(client_socket_fd,data);
   }
 
+  else{
+    strcpy(data, "Vous n'aves pas envoyer un message ou un calcule");
+    renvoie_message(client_socket_fd, data);
+  }
 
   // fermer le socket
   close(socketfd);
@@ -132,15 +136,11 @@ int recois_envoie_message(int socketfd)
 
 int main()
 {
-
   int socketfd;
   int bind_status;
-
   struct sockaddr_in server_addr;
 
-  /*
-   * Creation d'une socket
-   */
+  //Creation d'une socket
   socketfd = socket(AF_INET, SOCK_STREAM, 0);
   if (socketfd < 0){
     perror("Unable to open a socket");
@@ -158,8 +158,7 @@ int main()
 
   // Relier l'adresse à la socket
   bind_status = bind(socketfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
-  if (bind_status < 0)
-  {
+  if (bind_status < 0){
     perror("bind");
     return (EXIT_FAILURE);
   }
