@@ -52,12 +52,16 @@ void lire_dossier_recursif_i(char *filename, int n){
 };
 
 void lire_dossier_recursif(char *filename){
+    
     lire_dossier_recursif_i(filename, 1);
 };
 
 
 
 void lire_dossier_iteratif(char* dir){
+    /*
+     *cette fonction met en forme l'affichage grace a sa "distance par rapport au dossier de départ
+     */
     char list_dir[200][1024] = {};
     for (int j = 0; j <200; j++) strcpy(list_dir[j], ""); 
     int n = 0;
@@ -70,8 +74,6 @@ void lire_dossier_iteratif(char* dir){
             printf("Plus de dossier a ouvrir\n");
             return;
         }
-        // printf("tour n°%i\n", n);
-        // printf("tour count %i\n", count);
         DIR *dirp = opendir(list_dir[n]);
         struct dirent *entry;
         //on verifie si on a bien ouvert le dossier
@@ -85,15 +87,7 @@ void lire_dossier_iteratif(char* dir){
             printf("    %s\n", entry->d_name);
             if (entry->d_type == DT_DIR){
                 if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0){
-                    // printf("%i\n", count);
-                    // printf("chemin de base: %s\n", list_dir[count]);
-                    // printf("chemin a completer: %s\n", list_dir[n]);
-                    // printf("nom truc a ajouter: %s\n", entry->d_name);
-
                     strcat(strcat(strcat(list_dir[count],list_dir[n]),entry->d_name),"/");// ajout d'un chemin dans la list_dir
-
-                    // printf("chemin obtenu: %s\n", list_dir[count]);
-
                     count++;
                 }
             }
