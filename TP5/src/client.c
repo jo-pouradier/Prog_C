@@ -70,6 +70,7 @@ int envoie_numeros_operateur(int socketfd, char *data){
   entry = readdir(dirp); // on enleve .
   entry = readdir(dirp); // on enleve ..
   entry = readdir(dirp); // on enleve .DS_store
+
   while ((entry = readdir(dirp)) != NULL){
     strcpy((promo+n)->prenom, entry->d_name);
     char dire[1024];
@@ -85,30 +86,26 @@ int envoie_numeros_operateur(int socketfd, char *data){
   printf("\n");
   //on recupere les notes et on fait la moyenne pour chaque eleve
   for (int i = 0; i < NBR_ELEVE; i++){
-    printf("boucle eleve for tour : %i\n", i);
+    printf("--------------------------------");
+    printf("boucle eleve for tour : %i, dir : %s\n", i,(promo+i)->dire);
     //on ouvre le dossier de l'eleve
     DIR *dirp = opendir((promo+i)->dire);
     struct dirent *file;
     if (dirp == NULL) {
-        printf("error opendir eleve");
+        printf("error opendir eleve\n");
+        continue;
     }
     printf("eleve directory opened\n");
 
     //on considere qu'on a mtn que des fichiers avec des notes et non des dossiers
     //on lit toutes les notes de l'eleve
     (promo+i)->notes.nbr_notes = 0;
-    for (int j=0; j<n; j++){
+    int j = 0;
+    while ((file = readdir(dirp)) != NULL){
       printf("boucle note for tour : %i\n", j);
-      file = readdir(dirp);
-      
-      if (file == NULL){
-        printf("error readdir eleve : %s", (promo+j)->dire);
-        continue;
-      };
-      printf("fichier note readdir");
-      file = readdir(dirp); // on enleve .
-      file = readdir(dirp); // on enleve ..
-      file = readdir(dirp); // on enleve .DS_store
+      if (strcmp(file->d_name, "."))file = readdir(dirp); // on enleve .
+      if (strcmp(file->d_name, ".."))file = readdir(dirp); // on enleve ..
+      if (strcmp(file->d_name, ".DS_Store"))file = readdir(dirp); // on enleve .DS_store
       printf("%s\n", file->d_name);
 
       FILE* ptr_file;
@@ -120,7 +117,8 @@ int envoie_numeros_operateur(int socketfd, char *data){
       printf("%s\n", filename);
       ptr_file = fopen(filename, "r");
       if (NULL == ptr_file) {
-          printf("file can't be opened \n");
+          printf("file can't be opened : %s\n", filename);
+          continue;
       }
       printf("file opened \n");
       // reading first line of file
@@ -133,6 +131,8 @@ int envoie_numeros_operateur(int socketfd, char *data){
       (promo+i)->notes.nbr_notes++;
       printf("%i\n", (promo+i)->notes.notes[j]);
       printf("%i\n", (promo+i)->notes.nbr_notes);
+      j++;
+      printf("\n");
     }
     closedir(dirp);
   }
