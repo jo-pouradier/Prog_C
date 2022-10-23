@@ -39,12 +39,13 @@ int envoie_numeros_operateur(int socketfd, char *data){
   char *dip;
   dip = strtok(data, delim);
   dip = strtok(NULL, delim);
+  printf("%s\n", dip);
   memset(dir, 0, sizeof(dir));
   strcpy(dir, dip);
   //on enleve le "\n" de fin
   if( dir[strlen(dir)-1] == '\n' )
     dir[strlen(dir)-1] = 0;
-  //printf("%s\n", dir);
+  printf("%s\n", dir);
 
   //on va ouvrir le dossier
   DIR *dirp = opendir(dir);
@@ -64,6 +65,16 @@ int envoie_numeros_operateur(int socketfd, char *data){
   }eleve;
   const int NBR_ELEVE = 248;
   eleve promo[NBR_ELEVE];
+  printf("sizeof notes[] : %lu\n", sizeof((promo)->notes.notes));
+  for (int i = 0; i < NBR_ELEVE;i++) {
+    memset((promo+i)->notes.notes, 0, sizeof((promo+i)->notes.notes));
+  }
+  
+  // for (int i = 0; i < NBR_ELEVE; i++) {
+  //   for (int j = 0; j < sizeof((promo+i)->notes.notes[0]); j++){
+  //     (promo+i)->notes.notes[j] = 0;
+  //   }
+  // }
 
   //initialisation du prenom et du dossier eleve
   int n = 0; //compte le nombre d'eleve
@@ -71,9 +82,11 @@ int envoie_numeros_operateur(int socketfd, char *data){
   entry = readdir(dirp); // on enleve ..
   entry = readdir(dirp); // on enleve .DS_store
 
+  printf("avant while : %s\n", dir);
   while ((entry = readdir(dirp)) != NULL){
     strcpy((promo+n)->prenom, entry->d_name);
     char dire[1024];
+    printf("%s\n", dir);
     strcpy((promo+n)->dire, dir);
     strcat((promo+n)->dire, entry->d_name);
     strcat((promo+n)->dire, "/");
@@ -86,8 +99,9 @@ int envoie_numeros_operateur(int socketfd, char *data){
   printf("\n");
   //on recupere les notes et on fait la moyenne pour chaque eleve
   for (int i = 0; i < NBR_ELEVE; i++){
-    // printf("--------------------------------");
-    // printf("boucle eleve for tour : %i, dir : %s\n", i,(promo+i)->dire);
+    printf("--------------------------------");
+    printf("boucle eleve for tour : %i, dir : %s\n", i,(promo+i)->dire);
+    if (strcmp((promo+i)->dire, "")==0) break;
     //on ouvre le dossier de l'eleve
     DIR *dirp = opendir((promo+i)->dire);
     struct dirent *file;
@@ -109,7 +123,7 @@ int envoie_numeros_operateur(int socketfd, char *data){
       // printf("%s\n", file->d_name);
 
       FILE* ptr_file;
-      char note[3];
+      char note[3] = {0};
       char filename[1024];
       // Opening file in reading mode
       strcpy(filename, (promo+i)->dire);
@@ -120,7 +134,7 @@ int envoie_numeros_operateur(int socketfd, char *data){
           printf("file can't be opened : %s\n", filename);
           continue;
       }
-      printf("file opened \n");
+      // printf("file opened \n");
       // reading first line of file
       fgets(note, 3, ptr_file);
       // Closing the file
@@ -135,6 +149,14 @@ int envoie_numeros_operateur(int socketfd, char *data){
       // printf("\n");
     }
     closedir(dirp);
+
+    //affichage
+    printf("notes:");
+    for (int j =0; j< sizeof((promo+i)->notes.notes); j++) {
+      if ((promo+i)->notes.notes[j]!= 0) {printf("%i, ", (promo+i)->notes.notes[j]);printf(" [%i] ", j);}
+    }
+    printf("\n");
+    printf("nbr_notes : %i\n",(promo+i)->notes.nbr_notes);
   }
   
   return(EXIT_SUCCESS);
