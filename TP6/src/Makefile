@@ -1,4 +1,4 @@
-CC ?= gcc
+CC ?= gcc -Wall -Wextras
 
 COBJS ?= client.o bmp.o couleur.o
 SOBJS ?= serveur.o 

@@ -75,12 +75,10 @@ void analyse(char *pathname, char *data)
   // choisir 10 couleurs
   for (count = 1; count < 11 && cc->size - count > 0; count++)
   {
-    if (cc->compte_bit == BITS32)
-    {
+    if (cc->compte_bit == BITS32){
       sprintf(temp_string, "#%02x%02x%02x,", cc->cc.cc24[cc->size - count].c.rouge, cc->cc.cc32[cc->size - count].c.vert, cc->cc.cc32[cc->size - count].c.bleu);
     }
-    if (cc->compte_bit == BITS24)
-    {
+    if (cc->compte_bit == BITS24){
       sprintf(temp_string, "#%02x%02x%02x,", cc->cc.cc32[cc->size - count].c.rouge, cc->cc.cc32[cc->size - count].c.vert, cc->cc.cc32[cc->size - count].c.bleu);
     }
     strcat(data, temp_string);
@@ -97,8 +95,7 @@ int envoie_couleurs(int socketfd, char *pathname)
   analyse(pathname, data);
 
   int write_status = write(socketfd, data, strlen(data));
-  if (write_status < 0)
-  {
+  if (write_status < 0){
     perror("erreur ecriture");
     exit(EXIT_FAILURE);
   }

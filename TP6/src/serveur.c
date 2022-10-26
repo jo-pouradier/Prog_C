@@ -7,7 +7,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/epoll.h>
+// #include <sys/epoll.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +21,11 @@ void plot(char *data)
 
   // Extraire le compteur et les couleurs RGB
   FILE *p = popen("gnuplot -persist", "w");
+  if (p == NULL){
+    printf("Error opening pipe\n");
+    return;
+  }
+  printf("Pipe opened \n");
   printf("Plot\n");
   int count = 0;
   int n;
