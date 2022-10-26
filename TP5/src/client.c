@@ -101,13 +101,12 @@ int envoie_numeros_operateur(int socketfd, char *data){
   for (int i = 0; i < NBR_ELEVE; i++){
     printf("--------------------------------");
     printf("boucle eleve for tour : %i, dir : %s\n", i,(promo+i)->dire);
-    if (strcmp((promo+i)->dire, "")==0) break;
     //on ouvre le dossier de l'eleve
     DIR *dirp = opendir((promo+i)->dire);
     struct dirent *file;
     if (dirp == NULL) {
         printf("error opendir eleve\n");
-        continue;
+        break;
     }
     // printf("eleve directory opened\n");
 
@@ -152,9 +151,9 @@ int envoie_numeros_operateur(int socketfd, char *data){
 
     //affichage
     printf("notes:");
-    for (int j =0; j< sizeof((promo+i)->notes.notes); j++) {
-      if ((promo+i)->notes.notes[j]!= 0) {printf("%i, ", (promo+i)->notes.notes[j]);printf(" [%i] ", j);}
-    }
+    for (int i=0; i<sizeof((promo+i)->notes.notes); i++) {
+      if ((promo+i)->notes.notes[i]!=0) printf("%i, [%i] ; ", (promo+i)->notes.notes[i], i);
+      }
     printf("\n");
     printf("nbr_notes : %i\n",(promo+i)->notes.nbr_notes);
   }

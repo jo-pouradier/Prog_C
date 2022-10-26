@@ -12,6 +12,7 @@
  * port d'ordinateur pour envoyer et recevoir des messages
  */
 #define PORT 8089
+//ip 192.168.221.244
 
 /*
  * Fonction d'envoi et de réception de messages
