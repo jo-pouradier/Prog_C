@@ -1,4 +1,4 @@
-CC ?= gcc -Wall -Wextra 
+CC ?= gcc -Wall -Wextra -v
 
 CFLAGS=-Wall -Wextra -g
 

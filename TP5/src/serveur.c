@@ -39,7 +39,6 @@ int recois_numeros_calcul(int client_socket_fd, char *data){
   ptr = strtok(NULL, delim);
   int num2 = atoi(ptr);
   char *op = strtok(NULL, delim);
-  printf("calcul a faire : %d %s %d \n", num1, op, num2); // comment enlever le \n de op ??
 
   switch (*op){
         case '+':
@@ -76,11 +75,9 @@ int recois_numeros_calcul(int client_socket_fd, char *data){
  * envoyées par le client. En suite, le serveur envoie un message
  * en retour
  */
-int recois_envoie_message(int socketfd)
-{
+int recois_envoie_message(int socketfd){
   struct sockaddr_in client_addr;
   char data[1024];
-
   unsigned int client_addr_len = sizeof(client_addr);
 
   // nouvelle connection de client
@@ -89,44 +86,50 @@ int recois_envoie_message(int socketfd)
     perror("not accepted");
     return (EXIT_FAILURE);
   }
-
   // la réinitialisation de l'ensemble des données
   memset(data, 0, sizeof(data));
+  int transmission = 1;
 
-  // lecture de données envoyées par un client
-  int data_size = read(client_socket_fd, (void *)data, sizeof(data));
-  if (data_size < 0){
-    perror("erreur lecture");
-    return (EXIT_FAILURE);
-  }
+  while(transmission) {
+    // lecture de données envoyées par un client
+    int data_size = read(client_socket_fd, (void *)data, sizeof(data));
+    if (data_size < 0){
+      perror("erreur lecture");
+      return (EXIT_FAILURE);
+    }
 
-  /*
-   * extraire le code des données envoyées par le client.
-   * Les données envoyées par le client peuvent commencer par le mot "message :" ou un autre mot.
-   */
-  printf("Message recu: %s", data);
-  
-  char code[10];
-  sscanf(data, "%s", code);
+    /*
+     * extraire le code des données envoyées par le client.
+     * Les données envoyées par le client peuvent commencer par le mot "message :" ou un autre mot.
+     */
+    printf("Message recu: %s \n", data);
+    char code[10];
+    sscanf(data, "%s", code);
+    //Si on a un message, on en renvoie un
+    if (strcmp(code, "message:") == 0){
+      // Demandez à l'utilisateur d'entrer un message
+      char message2[1024];
+      printf("Votre message (max 1023 caracteres): ");
+      fgets(message2, sizeof(message2), stdin);
+      strcat(data, message2);
+      renvoie_message(client_socket_fd, message2);
+    }
 
-  //Si on a un message, on en renvoie un
-  if (strcmp(code, "message:") == 0){
-    // Demandez à l'utilisateur d'entrer un message
-    char message2[1024];
-    printf("Votre message (max 1023 caracteres): ");
-    fgets(message2, sizeof(message2), stdin);
-    strcat(data, message2);
-    renvoie_message(client_socket_fd, message2);
-  }
+    //Si on a in caclule il faut renvoyer le resultat
+    else if (strcmp(code, "calcule:") == 0){
+      recois_numeros_calcul(client_socket_fd,data);
+    }
 
-  //Si on a in caclule il faut renvoyer le resultat
-  else if (strcmp(code, "calcule:") == 0){
-    recois_numeros_calcul(client_socket_fd,data);
-  }
-
-  else{
-    strcpy(data, "Vous n'aves pas envoyer un message ou un calcule");
-    renvoie_message(client_socket_fd, data);
+    else{
+      char fin[4];
+      sscanf(code, "%s", fin);
+      printf("%s\n" , fin);
+      if (strcmp(fin, "fin") == 0) {printf("fin\n");transmission = 0;}
+      else{
+        strcpy(data, "Vous n'aves pas envoyer un message ou un calcule\n");
+        renvoie_message(client_socket_fd, data);
+      }
+    }
   }
 
   // fermer le socket
